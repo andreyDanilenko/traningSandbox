@@ -1,0 +1,24 @@
+
+include /blocks/header/header
+include /blocks/color/color
+include /blocks/sidebar/sidebar
+include /blocks/modal-project/modal-project
+include /blocks/questions/questions
+include /blocks/menu/menu
+include /blocks/button-home/button-home
+
+block variables
+
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css")
+    link(rel="stylesheet" href="/css/style.css")
+    title #{title}
+  body
+
+    block content
+
+  script(src="/js/main.min.js")

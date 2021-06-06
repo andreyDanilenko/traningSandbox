@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,700&display=swap");
+
+@import "variables/media.scss";
+@import "variables/grid.scss";
+@import "variables/colors.scss";
+@import "variables/typography.scss";
+@import "variables/other.scss";
+
+@import "global/fonts.scss";
+@import "global/base.scss";
+
+@import "mixin/media.scss";
+@import "mixin/grid.scss";
+
+@import "../blocks/header/header.scss";
+@import "../blocks/color/color.scss";
+@import "../blocks/sidebar/sidebar.scss";
+@import "../blocks/modal-project/modal-project.scss";
+@import "../blocks/questions/questions.scss";
+@import "../blocks/menu/menu.scss";
+@import "../blocks/button-home/button-home.scss";

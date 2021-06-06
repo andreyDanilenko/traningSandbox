@@ -1,0 +1,84 @@
+.sidebar__toggle {
+  position: fixed;
+  top: 2rem;
+  right: 3rem;
+  font-size: 2rem;
+  background: transparent;
+  border-color: transparent;
+  color: $clr-primary-5;
+  transition: $transition;
+  cursor: pointer;
+  animation: bounce 2s ease-in-out infinite;
+}
+.sidebar__toggle:hover {
+  color: $clr-primary-7;
+}
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+.close-btn {
+  font-size: 1.75rem;
+  background: transparent;
+  border-color: transparent;
+  color: $clr-primary-5;
+  transition: $transition;
+  cursor: pointer;
+  color: $clr-red-dark;
+}
+.close-btn:hover {
+  color: $clr-red-light;
+  transform: rotate(360deg);
+}
+
+.sidebar__links a {
+  display: block;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+  padding: 1rem 1.5rem;
+  color: $clr-grey-5;
+  transition: $transition;
+}
+.sidebar__links a:hover {
+  background: $clr-primary-8;
+  color: $clr-primary-5;
+  padding-left: 1.75rem;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  background: $clr-white;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  row-gap: 1rem;
+  box-shadow: $clr-red-dark;
+  transition: $transition;
+  transform: translate(-100%);
+}
+.sidebar__show {
+  transform: translate(0);
+}
+@media screen and (min-width: 676px) {
+  .sidebar {
+    width: 400px;
+  }
+}
