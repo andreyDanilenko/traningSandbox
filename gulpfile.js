@@ -33,7 +33,7 @@ function html() {
 };
 
 function style() {
-  return src(`${SRC_DIR}/styles/style.scss`)
+  return src(`${SRC_DIR}/styles/*scss`)
     .pipe(sass({ outputStyle: 'compressed' }))
     .pipe(autoprefixer({
       overrideBrowserslist: ['last 2 version']
