@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid');
-  let squares = document.querySelectorAll('.grid div');
-  Array.from(squares); //преобразуем в массив
+  let squares = Array.from(document.querySelectorAll('.grid div'));
+  ///Array.from(squares); //преобразуем в массив массивоподобный
   const scoreDisplay = document.querySelector('#tetris-score');
   const startBtn = document.querySelector('#tetris-start-button');
   const width = 10;
+  let nextRandom = 0;
+  let timeId;
+  let score = 0;
 
   const lTetromino = [
     [1, width + 1, width * 2 + 1, 2],
@@ -61,20 +64,21 @@ document.addEventListener('DOMContentLoaded', () => {
       squares[currentPosition + index].classList.remove('tetromino');
     });
   };
-
+  // запускает moveDown с определенным интервалом
   timeId = setInterval(moveDown, 1000);
-  // функция работы клавишь
+
+  // функция работы клавиш
   function control(e) {
     if (e.keyCode === 37) {
-      moveLeft()
+      moveLeft() // стрелка влево запускающая функцию moveLeft
     } else if (e.keyCode === 38) {
-      // rotate()
+      rotate() // стрелка вверх разворачивает элемент
     } else if (e.keyCode === 39) {
-      moveRight()
+      moveRight() // стрелка вправо запускающая функцию moveRight
     } else if (e.keyCode === 40) {
-      // moveDown()
+      moveDown()
     }
-  }
+  };
 
   document.addEventListener('keyup', control)
 
@@ -84,16 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
     draw();
     freeze();
   };
-  // функция останавливающая фигуру в конце блока
+  // функция останавливающая фигуру в конце контейнера
   function freeze() {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
       current.forEach(index => squares[currentPosition + index].classList.add('taken'))
-      random = Math.floor(Math.random() * theTetrominoes.length);
+      //Формируем новый элемент на исходной позиции
+      random = nextRandom
+      //random = Math.floor(Math.random() * theTetrominoes.length);
+      nextRandom = Math.floor(Math.random() * theTetrominoes.length);
       current = theTetrominoes[random][currentRotation];
       currentPosition = 4;
+      draw();
+      displayShape();
+      addScore()
     }
   };
-
+  //функции отрисовывающая фигуру в зависимости ее положения влево
+  //стирает старую фигуру, меняет положение в зависимсти от стороны, отрисовывает фигуру
   function moveLeft() {
     undraw();
     const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0)
@@ -105,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     draw();
   };
-
+  //функции отрисовывающая фигуру в зависимости ее положения вправо
   function moveRight() {
     undraw();
     const isAtLeftEdge = current.some(index => (currentPosition + index) % width === width - 1)
@@ -117,11 +128,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     draw();
   };
+  // функция отрисовывающая разварот фигуры вокруг своей оси
 
+  function rotate() {
+    undraw();
+    currentRotation++;
+    if (currentRotation === current.length) {
+      currentRotation = 0;
+    }
+    current = theTetrominoes[random][currentRotation];
+    draw();
+  };
 
+  const displaySquares = document.querySelectorAll('.mini-grid div');
 
+  const displayWidth = 5;
+  let displayIndex = 0;
 
+  const upNextTetrominoes = [
+    [1, displayWidth + 1, displayWidth * 2 + 1, 2], // l
+    [0, displayWidth, displayWidth + 1, displayWidth * 2 + 1], //z
+    [1, displayWidth, displayWidth + 1, displayWidth + 2], // t
+    [0, 1, displayWidth, displayWidth + 1], // o
+    [1, displayWidth + 1, displayWidth * 2 + 1, displayWidth * 3 + 1] // i
+  ];
 
+  function displayShape() {
+    displaySquares.forEach(square => {
+      square.classList.remove('tetromino')
+    });
+    upNextTetrominoes[nextRandom].forEach(index => {
+      displaySquares[displayIndex + index].classList.add('tetromino');
+    });
+  };
+
+  //Добавляем работоспособность кнопке start/pause
+  startBtn.addEventListener('click', () => {
+    if (timeId) {
+      clearInterval(timeId)
+      timeId = null;
+    } else {
+      draw();
+      timeId = setInterval(moveDown, 500);
+      nextRandom = Math.floor(Math.random() * theTetrominoes.length);
+      displayShape();
+    }
+  });
+  // функция сигнализирующая о сплошной линии образованную фигурами
+  function addScore() {
+    for (let i = 0; i < 199; i += width) {
+      const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9];
+      // console.log(row)
+      if (row.every(index => squares[index].classList.contains('taken'))) {
+        score += 10;
+        scoreDisplay.innerHTML = score;
+        row.forEach(index => {
+          squares[index].classList.remove('taken');
+          squares[index].classList.remove('tetromino');
+
+        });
+        const squaresRemoved = squares.splice(i, width);
+        squares.forEach(cell => grid.appendChild(cell))
+      }
+    }
+  };
 
 
 
