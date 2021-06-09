@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPosition = 4;
   let currentRotation = 0;
   let random = Math.floor(Math.random() * theTetrominoes.length);
-
   let current = theTetrominoes[random][currentRotation];
   // Функция вырисовывающая фигуру 
   // Закрашиваем квадраты массива "squares" перебором случайного масива вмассиве theTetraminoes
@@ -64,9 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
       squares[currentPosition + index].classList.remove('tetromino');
     });
   };
-  // запускает moveDown с определенным интервалом
-  timeId = setInterval(moveDown, 1000);
-
   // функция работы клавиш
   function control(e) {
     if (e.keyCode === 37) {
@@ -79,8 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
       moveDown()
     }
   };
-
-  document.addEventListener('keyup', control)
+  document.addEventListener('keyup', control);
 
   function moveDown() {
     undraw();
@@ -92,25 +87,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function freeze() {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
       current.forEach(index => squares[currentPosition + index].classList.add('taken'))
-      //Формируем новый элемент на исходной позиции
+      //start a new tetromino falling
       random = nextRandom
-      //random = Math.floor(Math.random() * theTetrominoes.length);
-      nextRandom = Math.floor(Math.random() * theTetrominoes.length);
-      current = theTetrominoes[random][currentRotation];
-      currentPosition = 4;
-      draw();
-      displayShape();
+      nextRandom = Math.floor(Math.random() * theTetrominoes.length)
+      current = theTetrominoes[random][currentRotation]
+      currentPosition = 4
+      draw()
+      displayShape()
       addScore()
+      gameOver()
     }
-  };
+  }
   //функции отрисовывающая фигуру в зависимости ее положения влево
   //стирает старую фигуру, меняет положение в зависимсти от стороны, отрисовывает фигуру
   function moveLeft() {
     undraw();
     const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0)
-
     if (!isAtLeftEdge) currentPosition -= 1;
-
     if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
       currentPosition += 1
     }
@@ -120,9 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function moveRight() {
     undraw();
     const isAtLeftEdge = current.some(index => (currentPosition + index) % width === width - 1)
-
     if (!isAtLeftEdge) currentPosition += 1;
-
     if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
       currentPosition -= 1
     }
@@ -137,7 +128,32 @@ document.addEventListener('DOMContentLoaded', () => {
       currentRotation = 0;
     }
     current = theTetrominoes[random][currentRotation];
+    checkRotatedPosition()
     draw();
+  };
+  //Исправляем срез при вращении с краю
+  function isAtRight() {
+    return current.some(index => (currentPosition + index + 1) % width === 0)
+  };
+
+  function isAtLeft() {
+    return current.some(index => (currentPosition + index) % width === 0)
+  };
+
+  function checkRotatedPosition(P) {
+    P = P || currentPosition       //get current position.  Then, check if the piece is near the left side.
+    if ((P + 1) % width < 4) {         //add 1 because the position index can be 1 less than where the piece is (with how they are indexed).     
+      if (isAtRight()) {            //use actual position to check if it's flipped over to right side
+        currentPosition += 1    //if so, add one to wrap it back around
+        checkRotatedPosition(P) //check again.  Pass position from start, since long block might need to move more.
+      }
+    }
+    else if (P % width > 5) {
+      if (isAtLeft()) {
+        currentPosition -= 1
+        checkRotatedPosition(P)
+      }
+    }
   };
 
   const displaySquares = document.querySelectorAll('.mini-grid div');
@@ -185,25 +201,18 @@ document.addEventListener('DOMContentLoaded', () => {
         row.forEach(index => {
           squares[index].classList.remove('taken');
           squares[index].classList.remove('tetromino');
-
         });
         const squaresRemoved = squares.splice(i, width);
-        squares.forEach(cell => grid.appendChild(cell))
+        squares = squaresRemoved.concat(squares);
+        squares.forEach(cell => grid.appendChild(cell));
       }
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  function gameOver() {
+    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+      scoreDisplay.innerHTML = 'end'
+      clearInterval(timeId)
+    }
+  }
 });
